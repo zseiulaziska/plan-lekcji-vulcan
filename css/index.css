@@ -1,0 +1,39 @@
+body{
+	background-color:#ffffff;
+	color:#000000;
+	font:11px verdana,sans-serif;
+	overflow:auto;
+	margin:0}
+.tabtytul{ /* tabelka z grafik¹ (nag³ówek) */
+	background-color:#f2af8d;
+	border-bottom:2px solid #808080}
+.tytul{ /* komórka z tytu³em */
+	background-color:#f2af8d;
+	color:#ffffff;
+	height:80px;
+	font:bold 36px verdana,sans-serif;
+	border-bottom:2px solid #c0c0c0}
+.logo{ /* komórka z logo szko³y */
+	text-align:right;
+	border-bottom:2px solid #c0c0c0}
+.tytulnapis{ /* tytu³ strony z cieniem (tylko IE) */
+	padding-left:20px;width:400px;height:60px;filter:Shadow(Color=#666666,Direction=150)}
+.tabela{ /* tabela z planem */
+	border:2px outset #ffdfbf;
+	background-color:#ffdfbf}
+td{
+	font-size:11px}
+a:link{color:#00006e}
+a:visited{color:#b6856b}
+a:hover{color:#00006e;text-decoration:none}
+.ng{
+	padding:4px;
+	background-color:#f2af8d;
+	color:#000000;
+	border:2px outset #f2af8d;
+	font-weight:bold;
+	font-size:13px}
+@media print{
+.tabtytul{ /* nag³ówek do druku */
+	display:none}
+}
