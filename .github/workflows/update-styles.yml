@@ -1,0 +1,68 @@
+name: Aktualizuj style planu lekcji
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'plany/*.html'
+      - 'css/*.css'
+      - 'index*.html'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Pobierz repozytorium
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Przywróć nowoczesne style CSS
+        run: |
+          cp -f .github/styles/plan.css css/plan.css
+          cp -f .github/styles/index.css css/index.css
+          cp -f .github/styles/menu.css css/menu.css
+          echo "Skopiowano nowoczesne style CSS"
+
+      - name: Dodaj meta viewport do plików HTML
+        run: |
+          VIEWPORT='<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">'
+
+          inject_viewport() {
+            local file="$1"
+            if grep -qi 'viewport' "$file"; then
+              echo "OK: $file - viewport już istnieje"
+              return
+            fi
+            sed -i "s|<head>|<head>\n$VIEWPORT|" "$file"
+            echo "Dodano viewport: $file"
+          }
+
+          for f in index*.html; do
+            [ -f "$f" ] && inject_viewport "$f"
+          done
+
+          for f in plany/*.html; do
+            [ -f "$f" ] && inject_viewport "$f"
+          done
+
+      - name: Sprawdź czy są zmiany do zatwierdzenia
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Zatwierdź zmiany
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Automatyczna aktualizacja stylów i meta viewport [skip ci]"
+          git push
