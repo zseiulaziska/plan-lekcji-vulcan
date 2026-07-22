@@ -1,4 +1,4 @@
-name: Aktualizuj style planu lekcji
+name: Aktualizuj style i deploy na GitHub Pages
 
 on:
   push:
@@ -8,61 +8,46 @@ on:
       - 'css/*.css'
       - 'index*.html'
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  update:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Pobierz repozytorium
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 1
 
       - name: Przywróć nowoczesne style CSS
         run: |
           cp -f .github/styles/plan.css css/plan.css
           cp -f .github/styles/index.css css/index.css
           cp -f .github/styles/menu.css css/menu.css
-          echo "Skopiowano nowoczesne style CSS"
 
       - name: Dodaj meta viewport do plików HTML
         run: |
           VIEWPORT='<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">'
-
-          inject_viewport() {
-            local file="$1"
-            if grep -qi 'viewport' "$file"; then
-              echo "OK: $file - viewport już istnieje"
-              return
-            fi
-            sed -i "s|<head>|<head>\n$VIEWPORT|" "$file"
-            echo "Dodano viewport: $file"
-          }
-
-          for f in index*.html; do
-            [ -f "$f" ] && inject_viewport "$f"
+          for f in index*.html plany/*.html; do
+            [ -f "$f" ] || continue
+            grep -qi 'viewport' "$f" && continue
+            sed -i "s|<head>|<head>\n$VIEWPORT|" "$f"
           done
 
-          for f in plany/*.html; do
-            [ -f "$f" ] && inject_viewport "$f"
-          done
+      - name: Przygotuj artefakt dla Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
 
-      - name: Sprawdź czy są zmiany do zatwierdzenia
-        id: check_changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Zatwierdź zmiany
-        if: steps.check_changes.outputs.changes == 'true'
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m "Automatyczna aktualizacja stylów i meta viewport [skip ci]"
-          git push
+      - name: Deploy na GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

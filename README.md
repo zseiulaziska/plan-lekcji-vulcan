@@ -11,12 +11,24 @@ Plan lekcji publikowany z programu **Plan lekcji Optivum** (VULCAN) z nowoczesny
 | `scripts/` | Skrypty JS (nawigacja, druk) |
 | `images/` | Obrazy (logo VULCAN) |
 
-## Automatyczna aktualizacja stylów
+## GitHub Actions — automatyczny deploy
 
-Po wgraniu nowych planów przez program Optivum, GitHub Actions automatycznie:
+Po pushu nowych planów z Optivum, GitHub Actions automatycznie:
 
-1. **Przywraca nowoczesne style** — kopiuje wzorcowe pliki CSS z `.github/styles/` do `css/`
-2. **Dodaje meta viewport** — wstrzykuje tag `<meta name="viewport">` do plików HTML dla responsywności na urządzeniach mobilnych
+1. **Przywraca nowoczesne style** — kopiuje wzorcowe CSS z `.github/styles/` do `css/`
+2. **Dodaje meta viewport** — wstrzykuje `<meta name="viewport">` do HTML dla responsywności
+3. **Deployuje na GitHub Pages** — publikuje poprawioną wersję jako stronę WWW
 
-Wzorcowe pliki CSS znajdują się w `.github/styles/` — edytuj je, aby zmienić wygląd.
+⚠️ **Ważne**: workflow **nie modyfikuje** brancha `main` — deploy idzie na GitHub Pages.  
+Dzięki temu nie ma konfliktów przy kolejnych publikacjach z Optivum.
+
+## Konfiguracja GitHub Pages
+
+1. Wejdź w **Settings → Pages** swojego repozytorium
+2. W sekcji **Source** wybierz **GitHub Actions**
+3. Gotowe — przy następnym pushu strona zaktualizuje się automatycznie
+
+## Modyfikacja wyglądu
+
+Wzorcowe pliki CSS znajdują się w `.github/styles/` — edytuj je, a zmiany zostaną zastosowane przy następnym deployu.
 
