@@ -1,0 +1,24 @@
+.menu{
+	font-weight:bold;
+	color:#2e448f}
+.menu a{
+	width:15em;
+	padding:0.5em;
+	border:2px outset #7b90d5;
+	text-decoration:none;
+	background-color:#7b90d5;
+	color:#2e448f}
+.menu a:visited{
+	color:#2e448f;
+	text-decoration:none}
+.menu a:hover{
+	background-color:#e1e6f5;
+	color:#000000;
+	text-decoration:none}
+.menup{
+	width:15em;
+	font-weight:bold;
+	padding:0.5em;
+	border:2px inset #e1e6f5;
+	background-color:#e1e6f5;
+	color:#000000}
